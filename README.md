@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="src-tauri/icons/128x128@2x.png" width="120" alt="LiquidJson icon" />
+<img src="128x128@2x.png" width="120" alt="LiquidJson icon" />
 
 # LiquidJson
 
@@ -205,7 +205,7 @@ Issues and pull requests are welcome. Please open an issue first to discuss majo
 
 # 🇮🇹 Italiano
 
-<img src="src-tauri/icons/128x128@2x.png" width="80" alt="LiquidJson icon" />
+<img src="128x128@2x.png" width="80" alt="LiquidJson icon" />
 
 **Un'app desktop velocissima per esplorare file JSON di grandi dimensioni.**
 
