@@ -27,13 +27,16 @@
 |---|---|
 | 🚀 **Lightning fast** | Opens a 55 MB file in ~0.5 s. Built with SIMD-accelerated JSON parsing (sonic-rs) and mimalloc |
 | 📦 **Huge file support** | Handles big files without breaking a sweat |
+| 🧾 **JSON & NDJSON** | Opens standard JSON plus NDJSON / JSON Lines (`.ndjson`, `.jsonl`) — auto-detected, with each record shown as an item of the root array |
 | 🖥️ **60 fps scrolling** | Virtual DOM — only ~40 rows rendered at any time, no matter how large the file |
 | 🔍 **Instant search** | Search keys and values in real time, navigate results with ←/→ arrows |
 | 🎯 **Scoped search** | Restrict matching to keys only, values only, or both (`k:v` chip) |
 | 🌳 **Filter view** | Switch results to a tree pruned to matches, their ancestors, and the containing object's other fields — see hits in context |
 | 🧬 **Regex search** | Toggle `.*` to match keys and values with case-insensitive regular expressions |
 | 📋 **Smart clipboard** | Copy key, value, path — with or without surrounding quotes |
+| ✅ **Multi-select** | Cmd/Ctrl+click to select multiple nodes, then copy all their keys or values (⌘/Ctrl+C or the context menu) — or delete them all at once |
 | ✏️ **Edit & save** | Edit any leaf value or object key in place, then **Save** / **Save As** to disk |
+| ➕ **Add & edit nodes** | Right-click a container → **Add field… / Add item…** to insert a scalar, an empty `{}` / `[]`, or a whole nested object/array; the same goes for editing a value |
 | 🗑️ **Delete nodes** | Right-click → **Delete** to remove a node and its whole subtree (with a confirm) |
 | 📤 **Export as JSON** | Right-click any node to save that subtree to a `.json` file (streamed straight to disk) |
 | 📂 **Recent files** | Quick access to the last 8 opened files |
@@ -41,7 +44,7 @@
 | 🖱️ **Context menu** | Right-click for edit value, delete, expand/collapse subtree, copy options, export, show details |
 | 📐 **Detail panel** | Resizable side panel showing type, path, depth, children and full value; follows the node you click while open |
 | 📎 **Paste to open** | Paste any JSON directly from the clipboard — no file needed |
-| 🗂️ **Drag & drop** | Drop a `.json` file anywhere on the window to open it |
+| 🗂️ **Drag & drop** | Drop a `.json`, `.ndjson` or `.jsonl` file anywhere on the window to open it |
 | 🎨 **Liquid Glass UI** | Apple-inspired frosted glass interface with smooth animations |
 | 🌗 **Light / dark / system** | Switch theme manually or follow the OS — your choice is remembered |
 | 💧 **Toggle liquid glow** | Turn the pointer-reactive glass glow on/off from the toolbar — your choice is remembered |
@@ -66,8 +69,9 @@ After the first install, the app **updates itself**: on launch it checks for a n
 
 ### Opening a file
 
-- Click **Open JSON** in the toolbar and select a `.json` file
-- Or **drag & drop** a `.json` file anywhere on the window
+- Click **Open JSON** in the toolbar and select a `.json`, `.ndjson` or `.jsonl` file
+- Or **drag & drop** a `.json`, `.ndjson` or `.jsonl` file anywhere on the window
+- NDJSON / JSON Lines is **auto-detected** (from any source, paste included) — each line becomes an item of the root array
 - Or **paste JSON** directly from the clipboard (`Cmd+V` / `Ctrl+V`)
 - Or pick from **Recent files** (clock icon)
 
@@ -80,6 +84,7 @@ After the first install, the app **updates itself**: on launch it checks for a n
 | Expand node | `→` or `Enter` |
 | Collapse node | `←` or `Enter` |
 | Show detail panel | `Space` |
+| Add / remove from multi-selection | `Cmd`/`Ctrl` + click |
 | First / last row | `Home` / `End` |
 
 ### Searching
@@ -100,7 +105,7 @@ Regex is case-insensitive; an invalid pattern shows a red border while you type.
 ### Editing & saving
 
 - Open the **detail panel** for a node (`Space`, "Show details", or "Edit value…" from the context menu).
-- Click the **pencil** next to the value to edit a leaf (string / number / bool / null); type a JSON value and press `⌘/Ctrl+Enter` to save, `Esc` to cancel. The pencil next to the key renames an object member.
+- Click the **pencil** next to the value to edit any node — a leaf *or* a whole object/array (its JSON is prefilled); type any JSON value and press `⌘/Ctrl+Enter` to save, `Esc` to cancel. The pencil next to the key renames an object member.
 - **Delete** a node and its whole subtree from the context menu (with a confirm). It can't be undone except by reloading the file — your changes only hit disk when you **Save**.
 - A **dot** on the **Save** button marks unsaved edits. Use **Save** to write back to the open file, or **Save As…** to choose a new path (also used for pasted JSON). Saving streams straight to disk.
 - ⚠️ Saving reformats the file (pretty-printed, 2-space indent).
@@ -113,13 +118,16 @@ Regex is case-insensitive; an invalid pattern shows a red border while you type.
 ### Context menu (right-click)
 
 - **Show details** — opens the detail side panel
-- **Edit value…** — edit a leaf node's value in the detail panel
-- **Copy key / Copy plain key** — with or without surrounding quotes
+- **Edit value… / Edit JSON…** — edit a leaf's value, or a whole object/array, in the detail panel
+- **Copy N keys / Copy N values / Copy N plain values** — when several nodes are multi-selected (Cmd/Ctrl+click), copy all their keys, raw values, or unquoted values at once (newline-separated, document order)
+- **Copy key** — the object-member key
 - **Copy value / Copy plain value** — with or without surrounding quotes
 - **Copy path** — dot-notation path to the node
+- **Add field… / Add item…** — on a container, insert a new child: a JSON scalar, an empty `{}` / `[]`, or a full nested object/array (paste it in); objects ask for a key
 - **Expand / Collapse subtree** — recursively expand or collapse
 - **Export as JSON…** — save this node's subtree to a `.json` file
 - **Delete** — remove this node and its whole subtree (with a confirm)
+- **Delete N nodes** — with a multi-selection (Cmd/Ctrl+click), remove all the selected nodes at once (with a confirm)
 
 ---
 
@@ -219,13 +227,16 @@ Issues and pull requests are welcome. Please open an issue first to discuss majo
 |---|---|
 | 🚀 **Velocità estrema** | Apre un file da 55 MB in ~0,5 s grazie al parser JSON SIMD (sonic-rs) e mimalloc |
 | 📦 **Supporto per file grandi** | Nessun limite pratico alle dimensioni del file |
+| 🧾 **JSON e NDJSON** | Apre JSON standard più NDJSON / JSON Lines (`.ndjson`, `.jsonl`) — rilevati automaticamente, con ogni record mostrato come elemento dell'array radice |
 | 🖥️ **Scroll a 60 fps** | DOM virtuale — solo ~40 righe renderizzate contemporaneamente |
 | 🔍 **Ricerca istantanea** | Cerca chiavi e valori in tempo reale, naviga i risultati con le frecce |
 | 🎯 **Ricerca per ambito** | Limita il match alle sole chiavi, ai soli valori, o a entrambi (chip `k:v`) |
 | 🌳 **Vista filtrata** | Mostra i risultati come albero ridotto ai match, ai loro antenati e agli altri campi dell'oggetto che li contiene — risultati nel contesto |
 | 🧬 **Ricerca regex** | Attiva `.*` per cercare chiavi e valori con espressioni regolari (case-insensitive) |
 | 📋 **Clipboard intelligente** | Copia chiave, valore, percorso — con o senza virgolette |
+| ✅ **Selezione multipla** | Cmd/Ctrl+click per selezionare più nodi, poi copia tutte le loro chiavi o valori (⌘/Ctrl+C o dal menu contestuale) — oppure eliminali tutti in un colpo |
 | ✏️ **Modifica e salva** | Modifica il valore di una foglia o la chiave di un oggetto, poi **Salva** / **Salva con nome** su disco |
+| ➕ **Aggiungi e modifica nodi** | Tasto destro su un container → **Add field… / Add item…** per inserire uno scalare, un `{}` / `[]` vuoto o un intero oggetto/array annidato; lo stesso vale modificando un valore |
 | 🗑️ **Elimina nodi** | Tasto destro → **Delete** per rimuovere un nodo e tutto il suo sottoalbero (con conferma) |
 | 📤 **Esporta in JSON** | Tasto destro su un nodo per salvarne il sottoalbero in un file `.json` (scritto in streaming su disco) |
 | 📂 **File recenti** | Accesso rapido agli ultimi 8 file aperti |
@@ -233,7 +244,7 @@ Issues and pull requests are welcome. Please open an issue first to discuss majo
 | 🖱️ **Menu contestuale** | Tasto destro per modificare il valore, eliminare, espandere/comprimere sottoalberi, copiare, esportare, mostrare dettagli |
 | 📐 **Pannello dettagli** | Pannello laterale ridimensionabile con tipo, percorso, profondità, figli e valore completo; mentre è aperto segue il nodo che clicchi |
 | 📎 **Incolla per aprire** | Incolla qualsiasi JSON dagli appunti — senza bisogno di un file |
-| 🗂️ **Drag & drop** | Trascina un file `.json` in qualsiasi punto della finestra per aprirlo |
+| 🗂️ **Drag & drop** | Trascina un file `.json`, `.ndjson` o `.jsonl` in qualsiasi punto della finestra per aprirlo |
 | 🎨 **UI Liquid Glass** | Interfaccia in stile frosted glass ispirata ad Apple |
 | 🌗 **Chiaro / scuro / sistema** | Cambia tema manualmente o segui l'OS — la scelta viene ricordata |
 | 💧 **Interruttore liquid glow** | Attiva/disattiva il bagliore del vetro reattivo al cursore dalla toolbar — la scelta viene ricordata |
@@ -258,8 +269,9 @@ Dopo la prima installazione l'app **si aggiorna da sola**: all'avvio verifica se
 
 ### Aprire un file
 
-- Clicca **Open JSON** nella toolbar e seleziona un file `.json`
-- Oppure **trascina** un file `.json` in qualsiasi punto della finestra
+- Clicca **Open JSON** nella toolbar e seleziona un file `.json`, `.ndjson` o `.jsonl`
+- Oppure **trascina** un file `.json`, `.ndjson` o `.jsonl` in qualsiasi punto della finestra
+- NDJSON / JSON Lines viene **rilevato automaticamente** (da qualsiasi origine, incolla compreso) — ogni riga diventa un elemento dell'array radice
 - Oppure **incolla il JSON** dagli appunti (`Cmd+V` / `Ctrl+V`)
 - Oppure seleziona dalla lista dei **file recenti** (icona orologio)
 
@@ -271,6 +283,7 @@ Dopo la prima installazione l'app **si aggiorna da sola**: all'avvio verifica se
 | Espandere un nodo | `→` o `Invio` |
 | Comprimere un nodo | `←` o `Invio` |
 | Mostrare il pannello dettagli | `Spazio` |
+| Aggiungere / togliere dalla selezione multipla | `Cmd`/`Ctrl` + click |
 | Prima / ultima riga | `Home` / `End` |
 
 ### Cercare
@@ -291,7 +304,7 @@ La regex è case-insensitive; un pattern non valido mostra un bordo rosso mentre
 ### Modifica e salvataggio
 
 - Apri il **pannello dettagli** di un nodo (`Spazio`, "Show details", o "Edit value…" dal menu contestuale).
-- Clicca la **matita** accanto al valore per modificare una foglia (string / number / bool / null); digita un valore JSON e premi `⌘/Ctrl+Invio` per salvare, `Esc` per annullare. La matita accanto alla chiave rinomina un membro di oggetto.
+- Clicca la **matita** accanto al valore per modificare qualsiasi nodo — una foglia *o* un intero oggetto/array (il suo JSON viene precompilato); digita un qualsiasi valore JSON e premi `⌘/Ctrl+Invio` per salvare, `Esc` per annullare. La matita accanto alla chiave rinomina un membro di oggetto.
 - **Elimina** un nodo e tutto il suo sottoalbero dal menu contestuale (con conferma). Non è annullabile se non ricaricando il file — le modifiche finiscono su disco solo quando fai **Salva**.
 - Un **pallino** sul pulsante **Salva** segnala modifiche non salvate. Usa **Salva** per riscrivere il file aperto, o **Salva con nome…** per scegliere un nuovo percorso (usato anche per il JSON incollato). Il salvataggio avviene in streaming su disco.
 - ⚠️ Il salvataggio riformatta il file (pretty-print, indentazione di 2 spazi).
@@ -304,13 +317,16 @@ La regex è case-insensitive; un pattern non valido mostra un bordo rosso mentre
 ### Menu contestuale (tasto destro)
 
 - **Show details** — apre il pannello laterale con i dettagli del nodo
-- **Edit value…** — modifica il valore di una foglia nel pannello dettagli
-- **Copy key / Copy plain key** — con o senza virgolette
+- **Edit value… / Edit JSON…** — modifica il valore di una foglia, o un intero oggetto/array, nel pannello dettagli
+- **Copy N keys / Copy N values / Copy N plain values** — con più nodi selezionati (Cmd/Ctrl+click), copia in un colpo le chiavi, i valori raw o i valori senza virgolette (separati da newline, in ordine di documento)
+- **Copy key** — la chiave del membro dell'oggetto
 - **Copy value / Copy plain value** — con o senza virgolette
 - **Copy path** — percorso dot-notation fino al nodo
+- **Add field… / Add item…** — su un container, inserisce un nuovo figlio: uno scalare JSON, un `{}` / `[]` vuoto, o un oggetto/array annidato completo (incollalo); per gli oggetti chiede una chiave
 - **Expand / Collapse subtree** — espandi o comprimi ricorsivamente
 - **Export as JSON…** — salva il sottoalbero del nodo in un file `.json`
 - **Delete** — rimuove questo nodo e tutto il suo sottoalbero (con conferma)
+- **Delete N nodes** — con una selezione multipla (Cmd/Ctrl+click), rimuove tutti i nodi selezionati in un colpo (con conferma)
 
 ---
 
